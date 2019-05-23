@@ -1,26 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { changeTitle } from "./actions/Actions";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import "./App.css";
+
+class App extends Component {
+  changeTitleFunction = id => {
+    let newTitle = prompt("please put new title");
+    let ourObject = this.props.todos.find(todo => {
+      return todo.id === id;
+    });
+    ourObject.title = newTitle;
+
+    const index = this.props.todos.findIndex(todo => todo.id === id);
+    let payload = {
+      ourObject,
+      index
+    };
+    this.props.changeTitle(payload);
+  };
+  render() {
+    console.log(this.props.todos);
+    const todos = this.props.todos.map(todo => {
+      return (
+        <div key={todo.id} onClick={() => this.changeTitleFunction(todo.id)}>
+          {todo.title}
+        </div>
+      );
+    });
+    return <div>{todos}</div>;
+  }
 }
 
-export default App;
+const mapStateToProps = (state, ownProps) => {
+  return state;
+};
+const mapDispatchToProps = dispatch => ({
+  changeTitle: payload => dispatch(changeTitle(payload))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
